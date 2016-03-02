@@ -947,6 +947,9 @@ void GraphBuilder::visitVAStartNode(DSNode* N) {
   // For the architectures we support, build dsnodes that match
   // how we know va_list is used.
   switch (Arch) {
+  case Triple::arm:
+  case Triple::thumb:
+    // ARM and thumb are the same as x86
   case Triple::x86:
     // On x86, we have:
     // va_list as a pointer to an array of pointers to the variable arguments

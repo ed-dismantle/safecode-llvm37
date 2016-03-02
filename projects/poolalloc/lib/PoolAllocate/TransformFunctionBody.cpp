@@ -1088,9 +1088,20 @@ void FuncTransform::visitCallSite(CallSite& CS) {
   }
 
   // Add the rest of the arguments unless we're a thread creation point, in which case we only need the pools
-  if(!thread_creation_point)
-	  Args.insert(Args.end(), CS.arg_begin(), CS.arg_end());
-    
+  if(!thread_creation_point) {
+    CallInst *TheCallInst = dyn_cast<CallInst>(TheCall);
+    /* We may need to cast here in case we have types that are the same but with different names
+       (caused by linking) */
+    if (TheCallInst) {
+      for (unsigned i = 0; i < CF->arg_size(); ++i) {
+        if (TheCallInst->getArgOperand(i)->getType() != CF->getFunctionType()->getParamType(i))
+          Args.push_back(new BitCastInst(TheCallInst->getArgOperand(i), CF->getFunctionType()->getParamType(i), "", TheCall));
+        else
+          Args.push_back(TheCallInst->getArgOperand(i));
+      }
+    }
+  }
+
   //
   // There are circumstances where a function is casted to another type and
   // then called (que horible).  We need to perform a similar cast if the
@@ -1143,7 +1154,12 @@ void FuncTransform::visitCallSite(CallSite& CS) {
   for (unsigned i = 0, e = ArgNodes.size(); i != e; ++i)
     AddPoolUse(*NewCall, Args[i], PoolUses);
 
-  TheCall->replaceAllUsesWith(NewCall);
+  /* Again, if we have two types that are the same but with different names
+   * (due to linking) a cast is required here */
+  if (NewCall->getType() != TheCall->getType()) {
+    TheCall->replaceAllUsesWith( new BitCastInst(NewCall, TheCall->getType(), "", TheCall));
+  }
+  else TheCall->replaceAllUsesWith(NewCall);
   DEBUG(errs() << "  Result Call: " << *NewCall << "\n");
 
   if (!TheCall->getType()->isVoidTy()) {

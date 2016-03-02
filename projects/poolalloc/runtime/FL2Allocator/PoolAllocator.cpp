@@ -15,6 +15,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "PoolAllocator.h"
+#ifdef CONTIKI
+#include "ArmNosysMutex.h"
+#endif
 #ifndef CONTIKI
 #include "poolalloc/MMAPSupport.h"
 #endif
@@ -368,7 +371,11 @@ void PoolSlab<PoolTraits>::destroy() {
 
 void poolinit_bp(PoolTy<NormalPoolTraits> *Pool, unsigned ObjAlignment) {
   DO_IF_PNP(memset(Pool, 0, sizeof(PoolTy<NormalPoolTraits>)));
+#ifndef CONTIKI
   pthread_mutex_init(&Pool->pool_lock,NULL);
+#else
+  mutex_init(&Pool->pool_lock);
+#endif
   Pool->Slabs = 0;
   if (ObjAlignment < 4) ObjAlignment = __alignof(double);
   Pool->AllocSize = INITIAL_SLAB_SIZE;
@@ -395,7 +402,11 @@ void *poolalloc_bp(PoolTy<NormalPoolTraits> *Pool, unsigned NumBytes) {
                       getPoolNumber(Pool), NumBytes));
   DO_IF_PNP(if (Pool->NumObjects == 0) ++PoolCounter);  // Track # pools.
 
+#ifndef CONTIKI
   pthread_mutex_lock(&Pool->pool_lock);
+#else
+  mutex_lock(&Pool->pool_lock);
+#endif
 
   if (NumBytes >= LARGE_SLAB_SIZE)
     goto LargeObject;
@@ -420,7 +431,11 @@ TryAgain:
     // Update bump ptr.
     Pool->ObjFreeList = (FreedNodeHeader<NormalPoolTraits>*)(BumpPtr+NumBytes);
     DO_IF_TRACE(fprintf(stderr, "%p\n", Result));
+#ifndef CONTIKI
     pthread_mutex_unlock(&Pool->pool_lock);
+#else
+    mutex_unlock(&Pool->pool_lock);
+#endif
     return Result;
   }
   
@@ -437,7 +452,11 @@ LargeObject:
   LAH->Marker = ~0U;
   LAH->LinkIntoList(&Pool->LargeArrays);
   DO_IF_TRACE(fprintf(stderr, "%p  [large]\n", LAH+1));
+#ifndef CONTIKI
   pthread_mutex_unlock(&Pool->pool_lock);
+#else
+  mutex_unlock(&Pool->pool_lock);
+#endif
   return LAH+1;
 }
 
@@ -451,7 +470,11 @@ void pooldestroy_bp(PoolTy<NormalPoolTraits> *Pool) {
 #endif
   DO_IF_POOLDESTROY_STATS(PrintPoolStats(Pool));
 
+#ifndef CONTIKI
   pthread_mutex_destroy(&Pool->pool_lock);
+#else
+  mutex_destroy(&Pool->pool_lock);
+#endif
 
   // Free all allocated slabs.
   PoolSlab<NormalPoolTraits> *PS = Pool->Slabs;
@@ -486,7 +509,11 @@ static void poolinit_internal(PoolTy<PoolTraits> *Pool,
   assert(Pool && "Null pool pointer passed into poolinit!\n");
   memset(Pool, 0, sizeof(PoolTy<PoolTraits>));
   Pool->thread_refcount = 1;
+#ifndef CONTIKI
   pthread_mutex_init(&Pool->pool_lock,NULL);
+#else
+  mutex_init(&Pool->pool_lock);
+#endif
   Pool->AllocSize = INITIAL_SLAB_SIZE;
 
   if (ObjAlignment < 4) ObjAlignment = __alignof(double);
@@ -536,7 +563,11 @@ void pooldestroy(PoolTy<NormalPoolTraits> *Pool) {
   if(Pool->thread_refcount)
 	  return;
 
+#ifndef CONTIKI
   pthread_mutex_destroy(&Pool->pool_lock);
+#else
+  mutex_destroy(&Pool->pool_lock);
+#endif
 
 #ifdef ENABLE_POOL_IDS
   unsigned PID;
@@ -879,9 +910,17 @@ unsigned poolobjsize(PoolTy<NormalPoolTraits> *Pool, void *Node) {
 
 void *poolalloc(PoolTy<NormalPoolTraits> *Pool, unsigned NumBytes) {
   DO_IF_FORCE_MALLOCFREE(return malloc(NumBytes));
+#ifndef CONTIKI
   if (Pool) pthread_mutex_lock(&Pool->pool_lock);
+#else
+  if (Pool) mutex_lock(&Pool->pool_lock);
+#endif
   void* to_return = poolalloc_internal(Pool, NumBytes);
+#ifndef CONTIKI
   if (Pool) pthread_mutex_unlock(&Pool->pool_lock);
+#else
+  if (Pool) mutex_unlock(&Pool->pool_lock);
+#endif
   return to_return;
 }
 
@@ -899,25 +938,49 @@ void *poolmemalign(PoolTy<NormalPoolTraits> *Pool,
                    unsigned Alignment, unsigned NumBytes) {
   //punt and use pool alloc.
   //I don't know if this is safe or breaks any assumptions in the runtime
+#ifndef CONTIKI
   if (Pool) pthread_mutex_lock(&Pool->pool_lock);
+#else
+  if (Pool) mutex_lock(&Pool->pool_lock);
+#endif
   intptr_t base = (intptr_t)poolalloc_internal(Pool, NumBytes + Alignment - 1);
+#ifndef CONTIKI
   if (Pool) pthread_mutex_unlock(&Pool->pool_lock);
+#else
+  if (Pool) mutex_unlock(&Pool->pool_lock);
+#endif
   return (void*)((base + (Alignment - 1)) & ~((intptr_t)Alignment -1));
 }
 
 void poolfree(PoolTy<NormalPoolTraits> *Pool, void *Node) {
   DO_IF_FORCE_MALLOCFREE(free(Node); return);
+#ifndef CONTIKI
   if (Pool) pthread_mutex_lock(&Pool->pool_lock);
+#else
+  if (Pool) mutex_lock(&Pool->pool_lock);
+#endif
   poolfree_internal(Pool, Node);
+#ifndef CONTIKI
   if (Pool) pthread_mutex_unlock(&Pool->pool_lock);
+#else
+  if (Pool) mutex_unlock(&Pool->pool_lock);
+#endif
 }
 
 void *poolrealloc(PoolTy<NormalPoolTraits> *Pool, void *Node,
                   unsigned NumBytes) {
   DO_IF_FORCE_MALLOCFREE(return realloc(Node, NumBytes));
+#ifndef CONTIKI
   if (Pool) pthread_mutex_lock(&Pool->pool_lock);
+#else
+  if (Pool) mutex_lock(&Pool->pool_lock);
+#endif
   void* to_return = poolrealloc_internal(Pool, Node, NumBytes);
+#ifndef CONTIKI
   if (Pool) pthread_mutex_unlock(&Pool->pool_lock);
+#else
+  if (Pool) mutex_unlock(&Pool->pool_lock);
+#endif
   return to_return;
 }
 

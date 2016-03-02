@@ -177,7 +177,11 @@ struct PoolTy {
   unsigned BytesAllocated;
 
   // Lock for the pool
+#ifndef CONTIKI
   pthread_mutex_t pool_lock;
+#else
+  unsigned pool_lock;
+#endif
 
   // Thread reference count for the pool
   int thread_refcount;

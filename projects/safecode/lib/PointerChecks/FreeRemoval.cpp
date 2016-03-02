@@ -40,9 +40,9 @@
 
 #define DEBUG_TYPE "FreeRemoval"
 
-#include "llvm/Module.h"
+#include "llvm/IR/Module.h"
 #include "llvm/Pass.h"
-#include "llvm/Instructions.h"
+#include "llvm/IR/Instructions.h"
 #include "SafeDynMemAlloc.h"
 #include "SCUtils.h"
 #include <iostream>

@@ -15,13 +15,15 @@
 #ifndef LLVM_ANALYSIS_CZEROINFO_H
 #define LLVM_ANALYSIS_CZEROINFO_H
 
-#include "llvm/Type.h"
-#include "llvm/Value.h"
-#include "llvm/Instructions.h"
-#include "llvm/BasicBlock.h"
-#include "llvm/Analysis/Dominators.h"
+#include "llvm/IR/Type.h"
+#include "llvm/IR/Value.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/BasicBlock.h"
+#include "llvm/IR/Dominators.h"
 #include "llvm/Pass.h"
-#include "llvm/Support/CFG.h"
+#include "llvm/IR/CFG.h"
+#include "llvm/Analysis/MemoryBuiltins.h"
+#include "llvm/Analysis/TargetLibraryInfo.h"
 #include <algorithm>
 
 using std::string;

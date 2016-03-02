@@ -15,13 +15,13 @@
 
 #include "llvm/Transforms/IPO.h"
 #include "CZeroInfo.h"
-#include "llvm/Module.h"
-#include "llvm/Argument.h"
-#include "llvm/Constants.h"
-#include "llvm/DerivedTypes.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Argument.h"
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/DerivedTypes.h"
 #include "llvm/ADT/DepthFirstIterator.h"
-#include "llvm/Function.h"
-#include "llvm/Support/CFG.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IR/CFG.h"
 #include <iostream>
 using namespace llvm;
 

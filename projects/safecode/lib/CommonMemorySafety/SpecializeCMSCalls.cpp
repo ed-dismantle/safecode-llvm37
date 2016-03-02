@@ -104,7 +104,7 @@ void SpecializeCMSCalls::specialize(Module &M, StringRef Before,
 
   // Make all calls of the old function use the new function instead.
   SmallVector <CallInst*, 64> ToRemove;
-  for (Value::use_iterator UI = From->use_begin(), E = From->use_end();
+  for (Value::user_iterator UI = From->user_begin(), E = From->user_end();
         UI != E;
         ++UI) {
     // Only call instructions are supposed to exist.

@@ -304,8 +304,8 @@ RegisterStackObjPass::registerAllocaInst (AllocaInst *AI) {
   while ((!MustRegisterAlloca) && (AllocaWorkList.size())) {
     Value * V = AllocaWorkList.back();
     AllocaWorkList.pop_back();
-    Value::use_iterator UI = V->use_begin();
-    for (; UI != V->use_end(); ++UI) {
+    Value::user_iterator UI = V->user_begin();
+    for (; UI != V->user_end(); ++UI) {
       // We cannot handle PHI nodes or Select instructions
       if (isa<PHINode>(*UI) || isa<SelectInst>(*UI)) {
         MustRegisterAlloca = true;

@@ -34,8 +34,8 @@ bool LoggingFunctions::runOnModule(Module &M) {
   // Look for va_start() calls to register.
   if (vaStart != 0) {
     vector<CallSite> vaStartCalls;
-    Value::use_iterator vaStartUse = vaStart->use_begin();
-    Value::use_iterator vaStartEnd = vaStart->use_end();
+    Value::user_iterator vaStartUse = vaStart->user_begin();
+    Value::user_iterator vaStartEnd = vaStart->user_end();
     // Find all va_start() call sites within vararg functions.
     for (; vaStartUse != vaStartEnd; ++vaStartUse) {
       CallSite CS(*vaStartUse);
@@ -81,8 +81,8 @@ bool LoggingFunctions::runOnModule(Module &M) {
   Function *vaCopy = M.getFunction("llvm.va_copy");
   if (vaCopy != 0) {
     vector<CallSite> vaCopyCalls;
-    Value::use_iterator vaCopyUse = vaCopy->use_begin();
-    Value::use_iterator vaCopyEnd = vaCopy->use_end();
+    Value::user_iterator vaCopyUse = vaCopy->user_begin();
+    Value::user_iterator vaCopyEnd = vaCopy->user_end();
     // Find all va_start() call sites within vararg functions.
     for (; vaCopyUse != vaCopyEnd; ++vaCopyUse) {
       CallSite CS(*vaCopyUse);

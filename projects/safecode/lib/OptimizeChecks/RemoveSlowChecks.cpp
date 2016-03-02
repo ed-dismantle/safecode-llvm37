@@ -86,7 +86,7 @@ llvm::RemoveSlowChecks::removeCheck (Module & M, Function * F) {
   //
   bool modified = false;
   std::vector<Instruction *> CallsToDelete;
-  for (Value::use_iterator FU = F->use_begin(); FU != F->use_end(); ++FU) {
+  for (Value::user_iterator FU = F->user_begin(); FU != F->user_end(); ++FU) {
     //
     // We are only concerned about call instructions; any other use is of
     // no interest to the organization.
@@ -95,7 +95,7 @@ llvm::RemoveSlowChecks::removeCheck (Module & M, Function * F) {
       //
       // If the call instruction has no uses, we can remove it.
       //
-      if (CI->use_begin() == CI->use_end())
+      if (CI->user_begin() == CI->user_end())
         CallsToDelete.push_back (CI);
     }
   }

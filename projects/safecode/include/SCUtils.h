@@ -328,7 +328,7 @@ escapesToMemory (Value * V) {
     //
     // Scan through all uses of the value.
     //
-    for (Value::use_iterator UI = V->use_begin(); UI != V->use_end(); ++UI) {
+    for (Value::user_iterator UI = V->user_begin(); UI != V->user_end(); ++UI) {
       //
       // We cannot handle PHI nodes because they might introduce a recurrence
       // in the def-use chain, and we're not handling such cycles at the

@@ -108,7 +108,7 @@ RewriteOOB::processFunction (Module & M, const CheckInfo & Check) {
   // operand to be the result of the function.
   //
   bool modified = false;
-  for (Value::use_iterator FU = F->use_begin(); FU != F->use_end(); ++FU) {
+  for (Value::user_iterator FU = F->user_begin(); FU != F->user_end(); ++FU) {
     //
     // We are only concerned about call instructions; any other use is of
     // no interest to the organization.
@@ -172,19 +172,19 @@ RewriteOOB::processFunction (Module & M, const CheckInfo & Check) {
       // iterator invalidation errors.
       //
       std::vector<User *> Uses;
-      Value::use_iterator UI = PeeledOperand->use_begin();
-      for (; UI != PeeledOperand->use_end(); ++UI) {
-        if (Instruction * Use = dyn_cast<Instruction>(*UI)) {
-          if (Use->getParent()->getParent() == CurrentFunction) {
-            if (isa<PHINode>(Use)) {
+      Value::user_iterator UI = PeeledOperand->user_begin();
+      for (; UI != PeeledOperand->user_end(); ++UI) {
+        if (Instruction * User = dyn_cast<Instruction>(*UI)) {
+          if (User->getParent()->getParent() == CurrentFunction) {
+            if (isa<PHINode>(User)) {
               if (inSameBlock) {
-                Uses.push_back (UI->getUser());
+                Uses.push_back (*UI);
                 ++Changes;
               }
               continue;
             }
-            if ((CI != Use) && (domTree->dominates (CI, Use))) {
-              Uses.push_back (UI->getUser());
+            if ((CI != User) && (domTree->dominates (CI, User))) {
+              Uses.push_back (*UI);
               ++Changes;
             }
           }

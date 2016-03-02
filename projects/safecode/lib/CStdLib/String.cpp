@@ -178,7 +178,7 @@ addStringCheck (Module & M, const std::string & name, unsigned argNo) {
   // Scan through the module for uses of the function to instrument.
   //
   std::vector<CallSite *> callsToInstrument;
-  for (Value::use_iterator UI = F->use_begin(), UE = F->use_end();
+  for (Value::user_iterator UI = F->user_begin(), UE = F->user_end();
        UI != UE;
        ++UI) {
     // Ensure the use is an instruction and that the instruction calls the
@@ -651,7 +651,7 @@ StringTransform::gtransform(Module &M,
   std::vector<Instruction *> toModify;
   std::vector<Instruction *>::iterator modifyIter, modifyEnd;
   // Scan through the module for uses of the function to transform.
-  for (Value::use_iterator UI = src->use_begin(), UE = src->use_end();
+  for (Value::user_iterator UI = src->user_begin(), UE = src->user_end();
        UI != UE;
        ++UI) {
     CallSite CS(*UI);

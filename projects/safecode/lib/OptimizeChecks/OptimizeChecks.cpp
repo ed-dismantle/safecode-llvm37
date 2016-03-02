@@ -78,7 +78,7 @@ OptimizeChecks::onlyUsedInCompares (Value * Val) {
     // uses may generate uses we need to check.  Still others are known-bad
     // uses.  Handle each appropriately.
     //
-    for (Value::use_iterator U = V->use_begin(); U != V->use_end(); ++U) {
+    for (Value::user_iterator U = V->user_begin(); U != V->user_end(); ++U) {
       // Compares are okay
       if (isa<CmpInst>(*U)) continue;
 
@@ -168,7 +168,7 @@ OptimizeChecks::processFunction (Module & M, const CheckInfo & Info) {
   //
   bool modified = false;
   std::vector<Instruction *> CallsToDelete;
-  for (Value::use_iterator FU = F->use_begin(); FU != F->use_end(); ++FU) {
+  for (Value::user_iterator FU = F->user_begin(); FU != F->user_end(); ++FU) {
     //
     // We are only concerned about call instructions; any other use is of
     // no interest to the organization.
@@ -177,7 +177,7 @@ OptimizeChecks::processFunction (Module & M, const CheckInfo & Info) {
       //
       // If the call instruction has any uses, we cannot remove it.
       //
-      if (CI->use_begin() != CI->use_end()) continue;
+      if (CI->user_begin() != CI->user_end()) continue;
 
       //
       // Get the operand that needs to be replaced as well as the operand

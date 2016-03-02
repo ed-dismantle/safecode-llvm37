@@ -15,6 +15,18 @@ LOADABLE_MODULE := 1
 endif
 endif
 
+SOURCES = AccessTrace.cpp \
+          AllHeapNodesHeuristic.cpp \
+          AllNodesHeuristic.cpp \
+          Heuristic.cpp \
+          PAMultipleGlobalPool.cpp \
+          PASimple.cpp \
+          PoolAllocate.cpp \
+	  PoolOptimize.cpp \
+	  RunTimeAssociate.cpp \
+	  TransformFunctionBody.cpp \
+          #PointerCompress.cpp \
+
 #
 # Include Makefile.common so we know what to do.
 #

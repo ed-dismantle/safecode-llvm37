@@ -15,7 +15,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "PoolAllocator.h"
+#ifndef CONTIKI
 #include "poolalloc/MMAPSupport.h"
+#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -984,6 +986,7 @@ int poolalloc_pthread_create(pthread_t* thread,
 
 #endif
 
+#ifndef CONTIKI
 //===----------------------------------------------------------------------===//
 // Pointer Compression runtime library.  Most of these are just wrappers
 // around the normal pool routines.
@@ -1128,6 +1131,7 @@ void* poolrealloc_pca(PoolTy<CompressedPoolTraits> *Pool, void* Node,
   if (Pool) pthread_mutex_unlock(&Pool->pool_lock);
   return to_return;
 }
+#endif
 
 //===----------------------------------------------------------------------===//
 // Access Tracing Runtime Library Support

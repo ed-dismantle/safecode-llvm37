@@ -59,7 +59,7 @@ struct NormalPoolTraits {
   }
 };
 
-
+#ifndef CONTIKI
 // CompressedPoolTraits - This describes a statically pointer compressed pool,
 // which is known to be <= 2^32 bytes in size (even on a 64-bit machine), and is
 // made out of a single contiguous block.  The meta-data to represent the pool
@@ -91,7 +91,7 @@ struct CompressedPoolTraits {
     return (char*)FNHP - (char*)PoolBase;
   }
 };
-
+#endif
 
 // NodeHeader - Each block of memory is preceeded in the the pool by one of
 // these headers.
@@ -210,7 +210,7 @@ extern "C" {
   void *poolalloc_bp(PoolTy<NormalPoolTraits> *Pool, unsigned NumBytes);
   void pooldestroy_bp(PoolTy<NormalPoolTraits> *Pool);
 
-
+#ifndef CONTIKI
   // Pointer Compression runtime library.  Most of these are just wrappers
   // around the normal pool routines.
   void *poolinit_pc(PoolTy<CompressedPoolTraits> *Pool, unsigned NodeSize,
@@ -233,6 +233,7 @@ extern "C" {
   void poolfree_pca(PoolTy<CompressedPoolTraits> *Pool, void* Node);
   void* poolrealloc_pca(PoolTy<CompressedPoolTraits> *Pool,
                                   void* Node, unsigned NumBytes);
+#endif
 
   // Access tracing runtime library support.
   void poolaccesstraceinit(void);

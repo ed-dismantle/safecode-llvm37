@@ -72,8 +72,8 @@ namespace {
 
 char InstrumentMemoryAccesses::ID = 0;
 
-INITIALIZE_PASS(InstrumentMemoryAccesses, "instrument-memory-accesses",
-                "Instrument memory accesses", false, false)
+static RegisterPass<InstrumentMemoryAccesses>
+X ("instrument-memory-accesses", "Instrument memory accesses");
 
 FunctionPass *llvm::createInstrumentMemoryAccessesPass() {
   return new InstrumentMemoryAccesses();

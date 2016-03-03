@@ -55,9 +55,7 @@ namespace {
 
 char OptimizeIdenticalLSChecks::ID = 0;
 
-INITIALIZE_PASS(OptimizeIdenticalLSChecks, "optimize-identical-ls-checks",
-                "Remove identical load/store checks where possible", false,
-                false)
+static RegisterPass<OptimizeIdenticalLSChecks> X("optimize-identical-ls-checks", "Remove identical load/store checks where possible");
 
 FunctionPass *llvm::createOptimizeIdenticalLSChecksPass() {
   return new OptimizeIdenticalLSChecks();

@@ -56,8 +56,7 @@ namespace {
 
 char SpecializeCMSCalls::ID = 0;
 
-INITIALIZE_PASS(SpecializeCMSCalls, "specialize-cms-calls",
-                "Specialize common memory safety checks", false, false)
+static RegisterPass<SpecializeCMSCalls> X("specialize-cms-calls", "Specialize common memory safety checks");
 
 ModulePass *llvm::createSpecializeCMSCallsPass() {
   return new SpecializeCMSCalls();

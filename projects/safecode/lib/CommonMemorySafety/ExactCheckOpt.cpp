@@ -82,8 +82,7 @@ namespace {
 
 char ExactCheckOpt::ID = 0;
 
-INITIALIZE_PASS(ExactCheckOpt, "exactcheck-opt",
-                "Convert checks into their fast versions", false, false)
+static RegisterPass<ExactCheckOpt> X ("exactcheck-opt", "Convert checks into their fast versions");
 
 ModulePass *llvm::createExactCheckOptPass() {
   return new ExactCheckOpt();

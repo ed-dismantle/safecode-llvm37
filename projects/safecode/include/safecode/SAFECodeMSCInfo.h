@@ -19,7 +19,6 @@
 
 namespace llvm {
 
-class PassRegistry;
 class ImmutablePass;
 
 void initializeSAFECodeMSCInfoPass(PassRegistry&);

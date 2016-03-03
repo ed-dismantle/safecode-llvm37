@@ -43,7 +43,6 @@ namespace {
   public:
     static char ID;
     NoMSCInfo() : ImmutablePass(ID), MSCInfo() {
-      initializeNoMSCInfoPass(*PassRegistry::getPassRegistry());
     }
 
     virtual void getAnalysisUsage(AnalysisUsage &AU) const {
@@ -73,8 +72,8 @@ namespace {
 
 // Register this pass
 char NoMSCInfo::ID = 0;
-INITIALIZE_AG_PASS(NoMSCInfo, MSCInfo, "no-msc-info",
-                   "No Memory Safety Check Info", true, true, true)
+static RegisterPass<NoMSCInfo> A("no-msc-info", "No Memory Safety Check Info");
+RegisterAnalysisGroup<MSCInfo, true> MSCInfo1(A);
 
 ImmutablePass* llvm::createNoMSCInfoPass() {
   return new NoMSCInfo();

@@ -29,7 +29,6 @@ namespace {
   public:
     static char ID;
     CommonMSCInfo() : ImmutablePass(ID) {
-      initializeCommonMSCInfoPass(*PassRegistry::getPassRegistry());
     }
 
     virtual void getAnalysisUsage(AnalysisUsage &AU) const {
@@ -52,8 +51,8 @@ namespace {
 
 // Register this pass
 char CommonMSCInfo::ID = 0;
-INITIALIZE_AG_PASS(CommonMSCInfo, MSCInfo, "common-msc-info",
-                   "Common Memory Safety Check Info", false, true, false)
+static RegisterPass<CommonMSCInfo> B("common-msc-info", "Common Memory Safety Check Info");
+RegisterAnalysisGroup<MSCInfo> MSCInfo2(B);
 
 ImmutablePass *llvm::createCommonMSCInfoPass() {
   return new CommonMSCInfo();

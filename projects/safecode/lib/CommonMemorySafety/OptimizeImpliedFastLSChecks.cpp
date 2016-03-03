@@ -93,9 +93,7 @@ namespace {
 
 char OptimizeImpliedFastLSChecks::ID = 0;
 
-INITIALIZE_PASS(OptimizeImpliedFastLSChecks, "optimize-implied-fast-ls-checks",
-                "Remove implied fast load/store checks where possible.", false,
-                false)
+static RegisterPass<OptimizeImpliedFastLSChecks> X("optimize-implied-fast-ls-checks", "Remove implied fast load/store checks where possible.");
 
 FunctionPass *llvm::createOptimizeImpliedFastLSChecksPass() {
   return new OptimizeImpliedFastLSChecks();

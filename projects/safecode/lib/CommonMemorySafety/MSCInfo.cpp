@@ -18,8 +18,8 @@
 using namespace llvm;
 
 // Register the MSCInfo interface, providing a nice name to refer to.
-INITIALIZE_ANALYSIS_GROUP(MSCInfo, "Memory Safety Check Info", NoMSCInfo)
 char MSCInfo::ID = 0;
+static RegisterAnalysisGroup<MSCInfo> MSCInfoGroup ("Pool Allocation Group");
 
 //===----------------------------------------------------------------------===//
 // Default chaining methods

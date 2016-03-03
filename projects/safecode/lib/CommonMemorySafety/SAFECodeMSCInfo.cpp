@@ -30,7 +30,6 @@ namespace {
   public:
     static char ID;
     SAFECodeMSCInfo() : ImmutablePass(ID) {
-      initializeSAFECodeMSCInfoPass(*PassRegistry::getPassRegistry());
     }
 
     virtual void getAnalysisUsage(AnalysisUsage &AU) const {
@@ -53,8 +52,8 @@ namespace {
 
 // Register this pass
 char SAFECodeMSCInfo::ID = 0;
-INITIALIZE_AG_PASS(SAFECodeMSCInfo, MSCInfo, "safecode-msc-info",
-                   "SAFECode Memory Safety Check Info", false, true, false)
+static RegisterPass<SAFECodeMSCInfo> C("safecode-msc-info", "SAFECode Memory Safety Check Info");
+RegisterAnalysisGroup<MSCInfo> MSCInfo3(C);
 
 ImmutablePass *llvm::createSAFECodeMSCInfoPass() {
   return new SAFECodeMSCInfo();

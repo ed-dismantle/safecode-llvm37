@@ -435,13 +435,15 @@ namespace {
   // The Pass class we implement
   struct CZeroPtrChecks : public FunctionPass {
     static char ID;
+    TargetLibraryInfo *TLI;
     CZeroPtrChecks () : FunctionPass ((intptr_t)(&ID)) {}
     const char *getPassName() const { return "CZero security pass"; }
     
     virtual bool runOnFunction (Function &F) {
       bool Error = false;
-      DominatorTree *DomTree = &getAnalysis<DominatorTree>();  
-      CZeroInfo *CZI = new CZeroInfo(F, DomTree);
+      DominatorTree *DomTree = &getAnalysis<DominatorTree>();
+      TLI = &getAnalysis<TargetLibraryInfoWrapperPass>().getTLI();
+      CZeroInfo *CZI = new CZeroInfo(F, DomTree, TLI);
       std::cerr << "\nIn function " << F.getName() << "\n";
       if (CZI->getWarnings() != "") {
 	std::cerr << "Security Warning/s: \n";
@@ -459,6 +461,7 @@ namespace {
       // TODO: Check when we generate code.
       AU.setPreservesAll();
       AU.addRequired<DominatorTree>();
+      AU.addRequired<TargetLibraryInfoWrapperPass>();
     }
     
   };

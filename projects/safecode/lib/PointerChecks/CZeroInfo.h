@@ -57,7 +57,7 @@ public:
     return (TargetID < PTT.TargetID);
   }
   
-  PointsToTarget(const Value *V) : Val(V) {
+  PointsToTarget(const Value *V, TargetLibraryInfo *TLI) : Val(V) {
     TargetID = NextTargetID++;
     Dummy = false;
     Global = false;
@@ -72,7 +72,7 @@ public:
 	  Struct = true;
       }
     }
-    else if (isa<MallocInst>(V)) {
+    else if (isMallocLikeFn(V, TLI)) {
       const MallocInst *MIV = dyn_cast<MallocInst>(V);
       Array = MIV->isArrayAllocation();
       if (!MIV->isArrayAllocation()) {
@@ -135,6 +135,7 @@ int PointsToTarget::NextTargetID = 0;
 // The graph is to be recreated for each function. This is done by each
 // CZeroInfo object being associated with a CZeroAliasGraph
 class CZeroAliasGraph {
+  TargetLibraryInfo *TLI;
   // We ensure that memory locations on stack alone are initialized before
   // use. A memory location on the stack is identified by the alloca
   // instruction that created it.  
@@ -151,7 +152,7 @@ protected:
   // NOTE: every update to the graph should update both of these maps
   
 public:
-  
+  CZeroAliasGraph(TargetLibraryInfo *TLInfo) : TLI(TLInfo) {}
   // Add and edge from V1 to V2.
   // Situations in which this happens is
   // V1: SSA pointer variable, V2: alloca
@@ -159,7 +160,7 @@ public:
   // Called only once for each SSA pointer value.
   void addEdge (const Value *V1, const Value *V2) {
     assert (pointsTo.count(V1) == 0 && "Value should not be inserted in graph yet");
-    PointsToTarget PT(V2);
+    PointsToTarget PT(V2, TLI);
     pointsTo[V1] = PT;
     pointedBy[PT].insert(V1);
   }
@@ -171,7 +172,7 @@ public:
   // This or addEdge(V1, V2) called only once for an SSA pointer value
   void addEdge (const Value *V, int TargetType) {
     assert (pointsTo.count(V) == 0 && "Value should not be inserted in graph yet");
-    PointsToTarget PT(TargetType);
+    PointsToTarget PT(TargetType, TLI);
     pointsTo[V] = PT;
     pointedBy[PT].insert(V);
   }
@@ -257,10 +258,7 @@ protected:
   
   
 public:
-  
-  CZeroInfo (Function& F, DominatorTree* DSet) : TheFunction(F), DomTree(DSet) {
-    
-  } 
+  CZeroInfo (Function& F, DominatorTree* DSet, TargetLibraryInfo *TLI) : TheFunction(F), DomTree(DSet), PointerAliasGraph(TLI) {}
   
   // Public access method to get all the warnings associated with
   // the particular function.

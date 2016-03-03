@@ -264,8 +264,9 @@ llvm::InlineFastChecks::addComparisons (BasicBlock * BB,
   //
   const DataLayout & TD = BB->getModule()->getDataLayout();
   Value * SizeInt = Size;
-  if (SizeInt->getType() != TD.getIntPtrType(BB->getType())) {
-    SizeInt = new ZExtInst (Size, TD.getIntPtrType(BB->getType()), "size", BB);
+  Type * VoidPtrTy = Type::getInt8PtrTy(BB->getModule()->getContext());
+  if (SizeInt->getType() != TD.getIntPtrType(VoidPtrTy)) {
+    SizeInt = new ZExtInst (Size, TD.getIntPtrType(VoidPtrTy), "size", BB);
   }
   Value * LastByte = BinaryOperator::Create (Instruction::Add,
                                              Base,
@@ -348,15 +349,16 @@ llvm::InlineFastChecks::createBodyFor (Function * F) {
   //
   const DataLayout & TD = F->getParent()->getDataLayout();
   Value * SizeInt = MemSize;
-  if (SizeInt->getType() != TD.getIntPtrType(entryBB->getType())) {
-    SizeInt = new ZExtInst (MemSize, TD.getIntPtrType(entryBB->getType()), "size", entryBB);
+  Type * VoidPtrTy = Type::getInt8PtrTy(entryBB->getModule()->getContext());
+  if (SizeInt->getType() != TD.getIntPtrType(VoidPtrTy)) {
+    SizeInt = new ZExtInst (MemSize, TD.getIntPtrType(VoidPtrTy), "size", entryBB);
   }
   Value * LastByte = BinaryOperator::Create (Instruction::Add,
                                              Result,
                                              SizeInt,
                                              "lastbyte",
                                              entryBB);
-  Constant * MinusOne = ConstantInt::getSigned (TD.getIntPtrType(entryBB->getType()), -1);
+  Constant * MinusOne = ConstantInt::getSigned (TD.getIntPtrType(VoidPtrTy), -1);
   LastByte = BinaryOperator::Create (Instruction::Add,
                                      LastByte,
                                      MinusOne,

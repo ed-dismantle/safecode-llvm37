@@ -1,0 +1,75 @@
+CC=../../../../build/Debug+Asserts/bin/clang
+CXX=../../../../build/Debug+Asserts/bin/clang++ 
+CFLAGS=-nostdlib -ffreestanding -target arm-none-eabi -mcpu=cortex-m3 -mthumb \
+       -ffunction-sections -fdata-sections -fshort-enums -fomit-frame-pointer -fno-strict-aliasing \
+       -fvisibility-inlines-hidden \
+       -Wall -Wno-deprecated -pedantic -Wno-long-long -Wall -W -Wno-unused-parameter -Wwrite-strings -Wcovered-switch-default \
+       -Wno-uninitialized -Wno-missing-field-initializers -Wno-comment -Wcast-qual \
+       -c \
+
+CXXFLAGS=-nostdlib -ffreestanding -target arm-none-eabi -mcpu=cortex-m3 -mthumb \
+       -std=gnu++11 -ffunction-sections -fdata-sections -fshort-enums -fomit-frame-pointer -fno-strict-aliasing \
+       -fvisibility-inlines-hidden -fno-exceptions -fno-rtti \
+       -Wall -Wno-deprecated -pedantic -Wno-long-long -Wall -W -Wno-unused-parameter -Wwrite-strings -Wcovered-switch-default \
+       -Wno-uninitialized -Wno-missing-field-initializers -Wno-comment -Wcast-qual \
+       -c \
+
+CPPFLAGS=-I/usr/lib/arm-none-eabi/include/ -I../../../../build/include \
+	 -I../../../../build/projects/safecode/include \
+	 -I../../../../include -I../../../../projects/safecode/include \
+	 -I/usr/lib/arm-none-eabi/include/c++/4.8 \
+	 -I/usr/lib/arm-none-eabi/include/c++/4.8/arm-none-eabi/armv7-m/ \
+	 -I/usr/include/newlib/c++/4.8/arm-none-eabi/armv7-m \
+	 -D_DEBUG -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS \
+	 -DCONTIKI
+
+all: embedded_runtime
+
+embedded_runtime: EmbeddedAllocator.o string.o FormatStrings.o stdarg.o stdio.o strings.o \
+	Report.o DebugReport.o cxxdummy.o PrintfSupport.o RangeTree.o \
+	cset.o cmap.o cvector.o
+
+cset.o: cset.cpp cset.h
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -o cset.o cset.cpp
+
+cmap.o: cmap.cpp cmap.h
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -o cmap.o cmap.cpp
+
+cvector.o: cvector.cpp cvector.h
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -o cvector.o cvector.cpp
+
+RangeTree.o: RangeTree.cpp
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -o RangeTree.o RangeTree.cpp
+
+cxxdummy.o: cxxdummy.c
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -o cxxdummy.o cxxdummy.c
+
+EmbeddedAllocator.o: EmbeddedAllocator.cpp RangeTree.cpp
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -o EmbeddedAllocator.o EmbeddedAllocator.cpp
+
+PrintfSupport.o: PrintfSupport.cpp FormatStrings.h cmap.h config.h
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -o PrintfSupport.o PrintfSupport.cpp
+
+strings.o: strings.cpp CStdLib.h CStdLibSupport.h config.h
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -o strings.o strings.cpp
+
+string.o: string.cpp CStdLib.h CStdLibSupport.h config.h
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -o string.o string.cpp
+
+FormatStrings.o: FormatStrings.cpp FormatStrings.h cmap.h
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -o FormatStrings.o FormatStrings.cpp
+
+stdarg.o: stdarg.cpp FormatStrings.h CStdLib.h CStdLibSupport.h cmap.h cset.h cvector.h config.h
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -o stdarg.o stdarg.cpp
+
+Report.o: Report.cpp Report.h
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -o Report.o Report.cpp
+
+DebugReport.o: DebugReport.cpp DebugReport.h
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -o DebugReport.o DebugReport.cpp
+
+stdio.o: stdio.cpp
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -o stdio.o stdio.cpp
+
+clean:
+	rm -f *.o

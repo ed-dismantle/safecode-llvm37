@@ -4,16 +4,16 @@ PARALLEL_DIRS = \
                Support \
                ArrayBoundChecks \
                InsertPoolChecks \
-               ConvertUnsafeAllocas \
                OptimizeChecks \
                RewriteOOB \
                DebugInstrumentation \
                FormatStrings \
                CStdLib \
-               SoftBound \
                Utility \
                CommonMemorySafety \
-               BaggyBoundsChecks \
+#               BaggyBoundsChecks \
+#               SoftBound \
+#               ConvertUnsafeAllocas \
 #               StackSafety \
 #               SpeculativeChecking \
 #               DanglingPointers \

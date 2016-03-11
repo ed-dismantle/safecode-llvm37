@@ -1,0 +1,32 @@
+CC=../../../../build/Debug+Asserts/bin/clang
+CXX=../../../../build/Debug+Asserts/bin/clang++ 
+CFLAGS=-nostdlib -ffreestanding -target arm-none-eabi -mcpu=cortex-m3 -mthumb \
+       -ffunction-sections -fdata-sections -fshort-enums -fomit-frame-pointer -fno-strict-aliasing \
+       -fvisibility-inlines-hidden \
+       -Wall -Wno-deprecated -pedantic -Wno-long-long -Wall -W -Wno-unused-parameter -Wwrite-strings -Wcovered-switch-default \
+       -Wno-uninitialized -Wno-missing-field-initializers -Wno-comment -Wcast-qual \
+       -c \
+
+CXXFLAGS=-nostdlib -ffreestanding -target arm-none-eabi -mcpu=cortex-m3 -mthumb \
+       -std=gnu++11 -ffunction-sections -fdata-sections -fshort-enums -fomit-frame-pointer -fno-strict-aliasing \
+       -fvisibility-inlines-hidden -fno-exceptions -fno-rtti \
+       -Wall -Wno-deprecated -pedantic -Wno-long-long -Wall -W -Wno-unused-parameter -Wwrite-strings -Wcovered-switch-default \
+       -Wno-uninitialized -Wno-missing-field-initializers -Wno-comment -Wcast-qual \
+       -c \
+
+CPPFLAGS=-I/usr/lib/arm-none-eabi/include/ -I../../../../build/include \
+	 -I../../../../build/projects/safecode/include \
+	 -I../../../../include -I../../../../projects/safecode/include \
+	 -I/usr/lib/arm-none-eabi/include/c++/4.8 \
+	 -I/usr/lib/arm-none-eabi/include/c++/4.8/arm-none-eabi/armv7-m/ \
+	 -I/usr/include/newlib/c++/4.8/arm-none-eabi/armv7-m \
+	 -D_DEBUG -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS \
+	 -DCONTIKI
+
+all: PoolAllocator.o
+
+PoolAllocator.o: PoolAllocator.cpp
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -o PoolAllocator.o PoolAllocator.cpp
+
+clean:
+	rm -f PoolAllocator.o

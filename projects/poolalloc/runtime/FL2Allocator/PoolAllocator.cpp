@@ -29,8 +29,8 @@ typedef long intptr_t;
 typedef unsigned long uintptr_t;
 
 // Performance tweaking macros.
-#define INITIAL_SLAB_SIZE 4096
-#define LARGE_SLAB_SIZE   4096
+#define INITIAL_SLAB_SIZE 4
+#define LARGE_SLAB_SIZE   4
 
 #ifndef NDEBUG
 #define NDEBUG

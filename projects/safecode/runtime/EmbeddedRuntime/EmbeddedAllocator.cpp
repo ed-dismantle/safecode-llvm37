@@ -69,8 +69,8 @@ boundscheckui(PPOOL Pool, void *Source, void *Dest) {
   else {
     /* We couldn't find the pointer in an allocated range! */
     void *error_location = (result ? Dest : Source);
-    //printf("Memory safety error at 0x%ux\n", error_location);
-    while(1) {}
+    printf("Memory safety error at 0x%lx\n", error_location);
+    if (StopOnError) while(1) {}
     return NULL;
   }
 }
@@ -80,8 +80,8 @@ exactcheck2(const char *source, const char *base, const char *result, unsigned s
   if ((result >= base) && (result < (base + size)))
     return (void*)result;
   else {
-    //printf("Memory safety error at 0x%ux\n", result);
-    while(1) {}
+    printf("Memory safety error at 0x%ux\n", result);
+    if (StopOnError) while(1) {}
     return NULL;
   }
 }
